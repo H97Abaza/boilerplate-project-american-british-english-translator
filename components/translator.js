@@ -19,9 +19,8 @@ class Translator {
     highlight(word) {
         return '<span class="highlight">word</span>'.replace("word", word)
     }
-    correctTitlesCase(text, highlight = true) {
-        const cb = (s) => highlight ? this.highlight(s) : s
-        return text.replaceAll(/(\b)(mr|mrs|ms|mx|dr|prof)(\b)/gi, (_, b1, s, b2) => b1 + cb(s.at(0)?.toUpperCase() + s.substring(1)) + b2)
+    correctTitlesCase(text) {
+        return text.replaceAll(/(\b)(mr|mrs|ms|mx|dr|prof)(\b)/gi, (_, b1, s, b2) => b1 + s.at(0)?.toUpperCase() + s.substring(1) + b2)
     }
     getAmericanToBritishDictionary() {
         return { ...americanOnly, ...americanToBritishSpelling, ...americanToBritishTitles }
@@ -35,11 +34,11 @@ class Translator {
         switch (locale) {
             case "american-to-british":
                 res = this.checkAndReplace(text, this.getAmericanToBritishDictionary(), cb)
-                res = res.replaceAll(/(\d{1,2}):(\d{1,2})/g, "$1.$2")
+                res = res.replaceAll(/(\d{1,2}):(\d{1,2})/g, (_, d1, d2) => cb(d1 + "." + d2))
                 break;
             case "british-to-american":
                 res = this.checkAndReplace(text, this.getBritishToAmericanDictionary(), cb)
-                res = res.replaceAll(/(\d{1,2})[.](\d{1,2})/g, "$1:$2")
+                res = res.replaceAll(/(\d{1,2})[.](\d{1,2})/g, (_, d1, d2) => cb(d1 + ":" + d2))
                 break;
             case null:
                 res = this.checkAndReplace(text, { ...this.getAmericanToBritishDictionary(), ...this.getBritishToAmericanDictionary() }, cb, false)
@@ -48,7 +47,7 @@ class Translator {
                 res = "Invalid value for locale field"
         }
         res = res[0].toUpperCase() + res.substring(1)
-        res = this.correctTitlesCase(res, highlight)
+        res = this.correctTitlesCase(res)
         if (res === text) {
             res = "Everything looks good to me!"
         }

@@ -26,10 +26,8 @@ suite('Functional Tests', () => {
         test("Translation with text and invalid locale field: POST request to / api / translate", (done) => {
             chai.request(server).post('/api/translate').send({ text, locale: "invalid local" }).end((err, res) => {
                 assert.equal(res.status, 200);
-                assert.property(res.body, "text");
-                assert.propertyVal(res.body, "text", text);
-                assert.property(res.body, "translation");
-                assert.propertyVal(res.body, "translation", "Invalid value for locale field");
+                assert.property(res.body, "error");
+                assert.propertyVal(res.body, "error", "Invalid value for locale field");
                 done();
             })
         })

@@ -11,6 +11,7 @@ module.exports = function (app) {
       const { text, locale } = req.body;
       if ([text, locale].every(Boolean)) {
         let translation = translator.translate(text, locale)
+        if (translation === "Invalid value for locale field")return res.json({error:translation})
         res.json({ text, translation })
       } else {
         if (text === "") return res.json({ error: "No text to translate" })
